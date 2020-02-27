@@ -1,5 +1,11 @@
 module FeatureSelector
 
-greet() = print("Hello World!")
+using Statistics
+using DataFrames
+
+include("CorrelationBasedFeatureSelector.jl")
+
+export
+    CorrelationBasedFeatureSelector
 
 end # module

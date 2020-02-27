@@ -8,6 +8,6 @@ makedocs(;
     ],
     repo="https://github.com/darrencl/FeatureSelector.jl/blob/{commit}{path}#L{line}",
     sitename="FeatureSelector.jl",
-    authors="Darren Lukas <darren.lukas@tri.edu.au>",
+    authors="Darren Lukas <darrenc2995@gmail.com>",
     assets=String[],
 )
