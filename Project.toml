@@ -1,0 +1,13 @@
+name = "FeatureSelector"
+uuid = "e0e7d8aa-9f8d-4d2b-94aa-a22ac5d6b31b"
+authors = ["Darren Lukas <darren.lukas@tri.edu.au>"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
