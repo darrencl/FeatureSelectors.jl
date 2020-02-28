@@ -2,7 +2,9 @@ module FeatureSelector
 
 using Statistics
 using DataFrames
+using HypothesisTests
 
+include("utils.jl")
 include("CorrelationBasedFeatureSelector.jl")
 include("PValueBasedFeatureSelector.jl")
 
