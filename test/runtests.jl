@@ -1,6 +1,7 @@
 using FeatureSelector
 using Test
+using RDatasets
 
 @testset "FeatureSelector.jl" begin
-    # Write your own tests here.
+    include("CorrelationBasedFeatureSelector.jl")
 end

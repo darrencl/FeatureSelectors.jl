@@ -6,7 +6,7 @@
 * `threshold::Float64` - Select features with correlation more than or equal to
   threshold. To ignore, simply set threshold to 0 (default behavior).
 """
-struct CorrelationBasedFeatureSelector
+mutable struct CorrelationBasedFeatureSelector
     k::Int64
     threshold::Float64
 end
@@ -18,29 +18,42 @@ end
 """
     function select_features(selector,
                              X::DataFrame,
-                             y::Vector)
+                             y::Vector;
+                             verbose::Bool=false,
+                             return_val::Bool=false)
 
 Select features based on the importance, which is defined by `selector` to
-target `y`. The available options for `selector` are:
+target `y`. if `verbose` is true, logs will be printed - this defaults to
+false. If `return_val` is true, this function will return only the feature
+feature names, otherwise, tuple of selected feature names and the 
+correlation value are returned.
 
-* `CorrelationBasedFeatureSelector` - Based on Pearson's correlation
-* `ModelBasedFeatureSelector` (TODO)
+If you have feature `X_data` as matrix and feature names `X_features` as a
+Vector, you can replace `X` with `X_data` and `X_features` (in this order).
+
+# Example
+
+```jldoctest
+# TODO
+```
 """
 function select_features(selector::CorrelationBasedFeatureSelector,
                          X_data::Matrix,
                          X_features::Vector,
                          y::Vector;
                          verbose::Bool=false,
-                         return_val::Bool=true)
+                         return_val::Bool=false)
     cor_arr = cor(X_data, y)
-    sorted_tup = sort([x for x in zip(X_features, cor_arr)], by=v-> abs(v[2]))
+    sorted_tup = sort([x for x in zip(X_features, cor_arr)], 
+                      by=v-> abs(v[2]),
+                      rev=true)
     if selector.k > 0
         verbose && @info "Filtering top k features" selector.k
         sorted_tup = sorted_tup[1:selector.k]
     end
     if selector.threshold > 0.0
         verbose && @info "Filtering by threshold" selector.threshold
-        sorted_tup = filter(v-> v[2]>=selector.threshold, sorted_tup)
+        sorted_tup = filter(v-> abs(v[2])>=selector.threshold, sorted_tup)
     end
     if return_val
         sorted_tup
@@ -53,7 +66,7 @@ select_features(selector::CorrelationBasedFeatureSelector,
                 X::DataFrame,
                 y::Vector;
                 verbose::Bool=false,
-                return_val::Bool=true) =
+                return_val::Bool=false) =
     select_features(selector,
                     convert(Matrix, X),
                     names(X),

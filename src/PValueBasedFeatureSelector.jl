@@ -10,7 +10,7 @@
   `:FTest` and `:ChiSq`. `:ChiSq` expects the input and target are in non-negative
   integers.
 """
-struct PValueBasedFeatureSelector
+mutable struct PValueBasedFeatureSelector
     k::Int64
     threshold::Float64
     options::Symbol
@@ -29,7 +29,7 @@ function select_features(selector::PValueBasedFeatureSelector,
                          X_features::Vector,
                          y::Vector;
                          verbose::Bool=false,
-                         return_val::Bool=true)
+                         return_val::Bool=false)
     # TODO: Calculate p value for each test - F-test and ChiSq
     pvals = begin
         if pval == :FTest
@@ -40,7 +40,9 @@ function select_features(selector::PValueBasedFeatureSelector,
              for X_col in eachcol(X_data)]
         end
     end
-    sorted_tup = sort([x for x in zip(X_features, pvals)], by=v-> abs(v[2]), rev=true)
+    sorted_tup = sort([x for x in zip(X_features, pvals)], 
+                      by=v-> abs(v[2]), 
+                      rev=true)
     if selector.k > 0
         verbose && @info "Filtering top k features" selector.k
         sorted_tup = sorted_tup[1:selector.k]
@@ -60,7 +62,7 @@ select_features(selector::PValueBasedFeatureSelector,
                 X::DataFrame,
                 y::Vector;
                 verbose::Bool=false,
-                return_val::Bool=true) =
+                return_val::Bool=false) =
     select_features(selector,
                     convert(Matrix, X),
                     names(X),
