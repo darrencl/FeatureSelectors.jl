@@ -1,4 +1,4 @@
-# FeatureSelector
+# FeatureSelector.jl
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://darrencl.github.io/FeatureSelector.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://darrencl.github.io/FeatureSelector.jl/dev)
@@ -12,5 +12,18 @@ Simple tool to select feature based on the statistical relationship between feat
 ## Quick start
 
 ```
+julia> using RDatasets, FeatureSelector
 
+julia> boston = dataset("MASS", "Boston");
+
+julia> selector = CorrelationBasedFeatureSelector(k=5)
+CorrelationBasedFeatureSelector(5, 0.0)
+
+julia> select_features(selector, boston[:, Not(:MedV)], boston.MedV)
+5-element Array{Symbol,1}:
+ :LStat
+ :Rm
+ :PTRatio
+ :Indus
+ :Tax
 ```
