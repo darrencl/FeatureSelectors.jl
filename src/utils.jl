@@ -21,16 +21,17 @@ julia> using RDatasets, FeatureSelector
 julia> titanic = dataset("datasets", "Titanic");
 
 julia> first(one_hot_encode(titanic[:, [:Class, :Sex, :Age]]), 3)
-3×11 DataFrame
-│ Row │ Class  │ Sex    │ Age    │ Class_1st │ Class_2nd │ Class_3rd │ Class_Crew │ Sex_Female │ Sex_Male │ Age_Adult │ Age_Child │
-│     │ String │ String │ String │ Bool      │ Bool      │ Bool      │ Bool       │ Bool       │ Bool     │ Bool      │ Bool      │
-├─────┼────────┼────────┼────────┼───────────┼───────────┼───────────┼────────────┼────────────┼──────────┼───────────┼───────────┤
-│ 1   │ 1st    │ Male   │ Child  │ 1         │ 0         │ 0         │ 0          │ 0          │ 1        │ 0         │ 1         │
-│ 2   │ 2nd    │ Male   │ Child  │ 0         │ 1         │ 0         │ 0          │ 0          │ 1        │ 0         │ 1         │
-│ 3   │ 3rd    │ Male   │ Child  │ 0         │ 0         │ 1         │ 0          │ 0          │ 1        │ 0         │ 1         │
+3×11 DataFrames.DataFrame. Omitted printing of 5 columns
+│ Row │ Class  │ Sex    │ Age    │ Class_1st │ Class_2nd │ Class_3rd │
+│     │ String │ String │ String │ Bool      │ Bool      │ Bool      │
+├─────┼────────┼────────┼────────┼───────────┼───────────┼───────────┤
+│ 1   │ 1st    │ Male   │ Child  │ 1         │ 0         │ 0         │
+│ 2   │ 2nd    │ Male   │ Child  │ 0         │ 1         │ 0         │
+│ 3   │ 3rd    │ Male   │ Child  │ 0         │ 0         │ 1         │
+
 
 julia> first(one_hot_encode(titanic[:, [:Class, :Sex, :Age]], cols=[:Class], drop_original=true), 3)
-3×6 DataFrame
+3×6 DataFrames.DataFrame
 │ Row │ Sex    │ Age    │ Class_1st │ Class_2nd │ Class_3rd │ Class_Crew │
 │     │ String │ String │ Bool      │ Bool      │ Bool      │ Bool       │
 ├─────┼────────┼────────┼───────────┼───────────┼───────────┼────────────┤

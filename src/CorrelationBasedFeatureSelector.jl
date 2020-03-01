@@ -25,7 +25,7 @@ end
 Select features based on the importance, which is defined by `selector` to
 target `y`. if `verbose` is true, logs will be printed - this defaults to
 false. If `return_val` is true, this function will return only the feature
-feature names, otherwise, tuple of selected feature names and the 
+feature names, otherwise, tuple of selected feature names and the
 correlation value are returned.
 
 If you have feature `X_data` as matrix and feature names `X_features` as a
@@ -34,7 +34,21 @@ Vector, you can replace `X` with `X_data` and `X_features` (in this order).
 # Example
 
 ```jldoctest
-# TODO
+julia> using RDatasets, FeatureSelector
+
+julia> boston = dataset("MASS", "Boston");
+
+julia> selector = CorrelationBasedFeatureSelector(k=5)
+CorrelationBasedFeatureSelector(5, 0.0)
+
+julia> select_features(selector, boston[:, Not(:MedV)], boston.MedV)
+5-element Array{Symbol,1}:
+ :LStat
+ :Rm
+ :PTRatio
+ :Indus
+ :Tax
+
 ```
 """
 function select_features(selector::CorrelationBasedFeatureSelector,
@@ -44,7 +58,7 @@ function select_features(selector::CorrelationBasedFeatureSelector,
                          verbose::Bool=false,
                          return_val::Bool=false)
     cor_arr = cor(X_data, y)
-    sorted_tup = sort([x for x in zip(X_features, cor_arr)], 
+    sorted_tup = sort([x for x in zip(X_features, cor_arr)],
                       by=v-> abs(v[2]),
                       rev=true)
     if selector.k > 0
