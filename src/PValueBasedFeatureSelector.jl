@@ -6,21 +6,21 @@
 * `threshold::Float64` - Select features with correlation less than or equal to
   threshold. Note that, in P-value, a feature is considered important when the value
   is close to 0. To ignore, simply set threshold to 0 (default behavior).
-* `options::Symbol` - Type of test to get the p-value. The available option are
+* `method::Symbol` - Type of test to get the p-value. The available option are
   `:FTest` and `:ChiSq`. `:ChiSq` expects the input and target are in non-negative
   integers.
 """
 mutable struct PValueBasedFeatureSelector
     k::Int64
     threshold::Float64
-    options::Symbol
+    method::Symbol
 end
 
 function PValueBasedFeatureSelector(;
                                     k::Int64=0,
                                     threshold::Float64=0.0,
-                                    options::Symbol=:FTest)
-    PValueBasedFeatureSelector(k, threshold, options)
+                                    method::Symbol=:FTest)
+    PValueBasedFeatureSelector(k, threshold, method)
 end
 
 # Docstring in CorrelationBasedFeatureSelector.jl
@@ -32,16 +32,24 @@ function select_features(selector::PValueBasedFeatureSelector,
                          return_val::Bool=false)
     # TODO: Calculate p value for each test - F-test and ChiSq
     pvals = begin
-        if pval == :FTest
+        if selector.method == :FTest
             [pvalue(VarianceFTest(X_col, y))
              for X_col in eachcol(X_data)]
-        elseif pval == :ChiSq
-            [pvalue(ChisqTest(X_col, y))
-             for X_col in eachcol(X_data)]
+        elseif selector.method == :ChiSq
+            for X_col in eachcol(X_data)
+                if all(t->t==Bool, typeof.(X_col))
+                    # Transform Bool into 0/1 in Int
+                    println("here")
+                    pvalue(ChisqTest(Int.(X_col), y))
+                else
+                    println("no here")
+                    pvalue(ChisqTest(X_col, y))
+                end
+            end
         end
     end
-    sorted_tup = sort([x for x in zip(X_features, pvals)], 
-                      by=v-> abs(v[2]), 
+    sorted_tup = sort([x for x in zip(X_features, pvals)],
+                      by=v-> abs(v[2]),
                       rev=true)
     if selector.k > 0
         verbose && @info "Filtering top k features" selector.k

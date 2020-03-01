@@ -1,6 +1,6 @@
 """
-    function one_hot_encode(df::DataFrame; 
-                            cols::Vector{Symbol}=Vector{Symbol}(), 
+    function one_hot_encode(df::DataFrame;
+                            cols::Vector{Symbol}=Vector{Symbol}(),
                             drop_original::Bool=false)
 
 Utility function to perform one-hot-encoding in DataFrame. This will add new columns
@@ -39,10 +39,10 @@ julia> first(one_hot_encode(titanic[:, [:Class, :Sex, :Age]], cols=[:Class], dro
 │ 3   │ Male   │ Child  │ 0         │ 0         │ 1         │ 0          │
 ```
 """
-function one_hot_encode(df::DataFrame; 
-                        cols::Vector{Symbol}=Vector{Symbol}(), 
+function one_hot_encode(df::DataFrame;
+                        cols::Vector{Symbol}=Vector{Symbol}(),
                         drop_original::Bool=false)
-    result_df = df 
+    result_df = df
     for (col_name, col) in eachcol(df, true)
         # Ignore if column not in cols
         if !(col_name in cols) && !isempty(cols)
@@ -51,8 +51,9 @@ function one_hot_encode(df::DataFrame;
         tmp_df = DataFrame(
             Array(transpose(indicatormat(df[:, col_name])))
         )
-        names!(tmp_df, [Symbol("$(col_name)_$x") for x in sort(unique(df[:, col_name]))])
-        result_df = drop_original ? hcat(result_df, tmp_df)[:, Not(col_name)] : 
+        rename!(tmp_df,
+                [Symbol("$(col_name)_$x") for x in sort(unique(df[:, col_name]))])
+        result_df = drop_original ? hcat(result_df, tmp_df)[:, Not(col_name)] :
                                     hcat(result_df, tmp_df)
     end
     result_df
