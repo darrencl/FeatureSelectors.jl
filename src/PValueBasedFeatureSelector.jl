@@ -39,11 +39,9 @@ function select_features(selector::PValueBasedFeatureSelector,
             for X_col in eachcol(X_data)
                 if all(t->t==Bool, typeof.(X_col))
                     # Transform Bool into 0/1 in Int
-                    println("here")
-                    pvalue(ChisqTest(Int.(X_col), y))
+                    pvalue(ChisqTest(Int.(X_col), y, 2))
                 else
-                    println("no here")
-                    pvalue(ChisqTest(X_col, y))
+                    pvalue(ChisqTest(X_col, y, 2))
                 end
             end
         end

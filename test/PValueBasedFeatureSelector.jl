@@ -13,9 +13,6 @@
                  (:SepalWidth, 8.948397578478762e-14),
                  (:PetalLength, 0.0)]
     @test first.(selected_features_all) == first.(expected)
-    # Using isapprox because the result with Matrix vs Array is not the
-    # exact same. More detail:
-    # https://github.com/JuliaLang/Statistics.jl/issues/24
     @test all(last.(selected_features_all) .≈ last.(expected))
 
     # Test also the p-values are not affected when target encoding swapped
@@ -63,9 +60,6 @@ end
                  (:SepalWidth, 8.948397578478762e-14),
                  (:PetalLength, 0.0)]
     @test first.(selected_features_all) == first.(expected)
-    # Using isapprox because the result with Matrix vs Array is not the
-    # exact same. More detail:
-    # https://github.com/JuliaLang/Statistics.jl/issues/24
     @test all(last.(selected_features_all) .≈ last.(expected))
 
     # Test also the p-values are not affected when target encoding changed

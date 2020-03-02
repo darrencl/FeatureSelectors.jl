@@ -20,7 +20,7 @@
                 (:Chas, 0.1752601771902984)]
     @test first.(selected_features_all) == first.(expected)
     # Using isapprox because the result with Matrix vs Array is not the
-    # exact same. More detail:
+    # exact same due to floating point computation. More detail:
     # https://github.com/JuliaLang/Statistics.jl/issues/24
     @test all(last.(selected_features_all) .≈ last.(expected))
 
