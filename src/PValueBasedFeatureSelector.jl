@@ -36,14 +36,18 @@ function select_features(selector::PValueBasedFeatureSelector,
             [pvalue(VarianceFTest(X_col, y))
              for X_col in eachcol(X_data)]
         elseif selector.method == :ChiSq
-            for X_col in eachcol(X_data)
-                if all(t->t==Bool, typeof.(X_col))
-                    # Transform Bool into 0/1 in Int
-                    pvalue(ChisqTest(Int.(X_col), y, 2))
-                else
-                    pvalue(ChisqTest(X_col, y, 2))
-                end
+            # Temporary DataFrame for easy aggregation
+            tmp_df = DataFrame(hcat(X_data, y))
+            # Rename cols to prevent name clash with count aggregation below
+            names!(tmp_df, [Symbol("input$i") for i=1:size(tmp_df)[2]])
+            y_name = names(tmp_df[!, [end]])[1]
+            tmp_pvals = Vector{Float64}()
+            for (col_name, X_col) in eachcol(tmp_df[:, 1:end-1], true)
+                _y = by(tmp_df, [col_name, y_name], nrow)
+                @info _y
+                push!(tmp_pvals, pvalue(ChisqTest(reshape(_y.x1, (2,2)))))
             end
+            tmp_pvals
         end
     end
     sorted_tup = sort([x for x in zip(X_features, pvals)],
