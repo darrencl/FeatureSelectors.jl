@@ -10,12 +10,8 @@ include("utils.jl")
 include("CorrelationBasedFeatureSelector.jl")
 include("PValueBasedFeatureSelector.jl")
 
-export
-    CorrelationBasedFeatureSelector,
-    PValueBasedFeatureSelector
+export CorrelationBasedFeatureSelector, PValueBasedFeatureSelector
 
-export
-    select_features,
-    one_hot_encode
+export select_features, one_hot_encode
 
 end # module

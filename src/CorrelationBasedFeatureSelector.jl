@@ -11,7 +11,7 @@ mutable struct CorrelationBasedFeatureSelector
     threshold::Float64
 end
 
-function CorrelationBasedFeatureSelector(;k::Int64=0, threshold::Float64=0.0)
+function CorrelationBasedFeatureSelector(; k::Int64 = 0, threshold::Float64 = 0.0)
     CorrelationBasedFeatureSelector(k, threshold)
 end
 
@@ -51,23 +51,24 @@ julia> select_features(selector, boston[:, Not(:MedV)], boston.MedV)
 
 ```
 """
-function select_features(selector::CorrelationBasedFeatureSelector,
-                         X_data::Matrix,
-                         X_features::Vector,
-                         y::Vector;
-                         verbose::Bool=false,
-                         return_val::Bool=false)
+function select_features(
+    selector::CorrelationBasedFeatureSelector,
+    X_data::Matrix,
+    X_features::Vector,
+    y::Vector;
+    verbose::Bool = false,
+    return_val::Bool = false,
+)
     cor_arr = cor(X_data, y)
-    sorted_tup = sort([x for x in zip(X_features, cor_arr)],
-                      by=v-> abs(v[2]),
-                      rev=true)
+    sorted_tup =
+        sort([x for x in zip(X_features, cor_arr)], by = v -> abs(v[2]), rev = true)
     if selector.k > 0
         verbose && @info "Filtering top k features" selector.k
         sorted_tup = sorted_tup[1:selector.k]
     end
     if selector.threshold > 0.0
         verbose && @info "Filtering by threshold" selector.threshold
-        sorted_tup = filter(v-> abs(v[2])>=selector.threshold, sorted_tup)
+        sorted_tup = filter(v -> abs(v[2]) >= selector.threshold, sorted_tup)
     end
     if return_val
         sorted_tup
@@ -76,14 +77,17 @@ function select_features(selector::CorrelationBasedFeatureSelector,
     end
 end
 
-select_features(selector::CorrelationBasedFeatureSelector,
-                X::DataFrame,
-                y::Vector;
-                verbose::Bool=false,
-                return_val::Bool=false) =
-    select_features(selector,
-                    convert(Matrix, X),
-                    names(X),
-                    y;
-                    verbose=verbose,
-                    return_val=return_val)
+select_features(
+    selector::CorrelationBasedFeatureSelector,
+    X::DataFrame,
+    y::Vector;
+    verbose::Bool = false,
+    return_val::Bool = false,
+) = select_features(
+    selector,
+    convert(Matrix, X),
+    names(X),
+    y;
+    verbose = verbose,
+    return_val = return_val,
+)
