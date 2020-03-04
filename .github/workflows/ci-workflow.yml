@@ -1,6 +1,6 @@
-name: Test
+name: CI
 on:
-  push: 
+  push:
     branches:
     - master
     - /^v[0-9]+\.[0-9]+\.[0-9]+$/ # version tags for Documenter
@@ -15,7 +15,7 @@ jobs:
       matrix:
         julia-version: [1.3]
         os: [ubuntu-latest, windows-latest, macOS-latest]
-    
+
     steps:
       - uses: actions/checkout@v1.0.0
       - name: "Set up Julia"
@@ -24,15 +24,9 @@ jobs:
           version: ${{ matrix.julia-version }}
       - uses: julia-actions/julia-buildpkg@master
       - uses: julia-actions/julia-runtest@master
-      - name: "Coverage"
+      - uses: julia-actions/julia-uploadcodecov@latest
         env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} 
-        run: julia -e '
-             using Pkg;
-             Pkg.add("Coverage");
-             using Coverage;
-             Codecov.submit(process_folder());'
-        shell: bash
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   doc:
     runs-on: ubuntu-latest
     steps:
@@ -46,4 +40,5 @@ jobs:
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For authentication with GitHub Actions token
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
         run: julia --project=docs/ docs/make.jl
