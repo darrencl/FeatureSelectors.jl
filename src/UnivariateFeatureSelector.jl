@@ -1,9 +1,9 @@
 """
 `UnivariateFeatureSelector` has the following fields:
 
-* `k::Int64` - Select top `k` features with the highest correlation to target
+* `k::Union{Int64,Nothing}` - Select top `k` features with the highest correlation to target
   variable. You could ignore this by specifying k == nothing. This defaults to nothing.
-* `threshold::Float64` - Select features with correlation more than or equal to
+* `threshold::Union{Float64,Nothing}` - Select features with correlation more than or equal to
   threshold. To ignore, simply set threshold to nothing (default behavior).
 """
 mutable struct UnivariateFeatureSelector
