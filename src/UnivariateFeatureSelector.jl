@@ -49,12 +49,12 @@ Vector, you can replace `X` with `X_data` and `X_features` (in this order).
 # Example
 
 ```jldoctest
-julia> using RDatasets, FeatureSelector
+julia> using RDatasets, FeatureSelector, DataFrames
 
 julia> boston = dataset("MASS", "Boston");
 
 julia> selector = UnivariateFeatureSelector(k=5)
-UnivariateFeatureSelector(5, 0.0)
+UnivariateFeatureSelector(5, nothing)
 
 julia> select_features(
            selector,

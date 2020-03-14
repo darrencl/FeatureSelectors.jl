@@ -10,25 +10,23 @@ helps selecting the important features based on the correlation and p-value.
 
 ## Selectors
 
-### Correlation based feature selector
+### Univariate feature selector
 ```@autodocs
 Modules = [FeatureSelector]
-Pages   = ["CorrelationBasedFeatureSelector.jl"]
+Pages   = ["UnivariateFeatureSelector.jl"]
 Filter = t -> typeof(t) === DataType
 ```
 
-### P-value based feature selector
-```@autodocs
-Modules = [FeatureSelector]
-Pages   = ["PValueBasedFeatureSelector.jl"]
-Filter = t -> typeof(t) === DataType
+#### Supported method
+```@docs
+pearson_correlation
+f_test
+chisq_test
 ```
 
 ## Select feature function
-```@autodocs
-Modules = [FeatureSelector]
-Pages   = ["CorrelationBasedFeatureSelector.jl"]
-Filter = t -> typeof(t) != DataType
+```@docs
+select_features
 ```
 
 ## Other util functions
