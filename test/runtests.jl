@@ -1,6 +1,10 @@
 using FeatureSelector
 using Test
+using RDatasets
 
 @testset "FeatureSelector.jl" begin
-    # Write your own tests here.
+    @testset "Univariate feature selector" begin
+        include("UnivariateFeatureSelector.jl")
+        # include("PValueBasedFeatureSelector.jl")
+    end
 end
