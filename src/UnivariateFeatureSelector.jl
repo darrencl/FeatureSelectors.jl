@@ -34,11 +34,11 @@ function UnivariateFeatureSelector(;
 end
 
 """
-    function select_features(selector,
-                             X::DataFrame,
-                             y::Vector;
-                             verbose::Bool=false,
-                             return_val::Bool=false)
+    select_features(selector,
+                    X::DataFrame,
+                    y::Vector;
+                    verbose::Bool=false,
+                    return_val::Bool=false)
 
 Select features based on the importance, which is defined by `selector.method`
 to target `y`. if `verbose` is true, logs will be printed - this defaults to
@@ -133,14 +133,14 @@ select_features(
 )
 
 """
-    function pearson_correlation(X_data::Matrix, y::Vector)
+    pearson_correlation(X_data::Matrix, y::Vector)
 
 Calculate pearson's correlation on `X_data` to `y`.
 """
 pearson_correlation(X_data::Matrix, y::Vector) = cor(X_data, y)
 
 """
-    function f_test(X_data::Matrix, y::Vector)
+    f_test(X_data::Matrix, y::Vector)
 
 Calculate p-value using f-test method.
 """
@@ -149,7 +149,7 @@ function f_test(X_data::Matrix, y::Vector)
 end
 
 """
-    function chisq_test(X_data::Matrix, y::Vector)
+    chisq_test(X_data::Matrix, y::Vector)
 
 Calculate p-value using chi-square test.
 """
