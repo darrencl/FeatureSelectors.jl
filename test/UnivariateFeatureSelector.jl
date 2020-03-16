@@ -1,11 +1,11 @@
 @testset "correlation feature selection" begin
     # 1. Test without k and threshold
     boston = dataset("MASS", "Boston")
-    selector = UnivariateFeatureSelector()
+    selector = UnivariateFeatureSelector(method=pearson_correlation)
     X = boston[:, Not(:MedV)]
     y = boston.MedV
     selected_features_all =
-        select_features(selector, pearson_correlation, X, y, return_val = true)
+        select_features(selector, X, y, return_val = true)
     expected = [
         (:LStat, -0.7376627261740151),
         (:Rm, 0.6953599470715394),
@@ -29,27 +29,27 @@
 
     # 2. Test with only k
     selector.k = 5
-    selected_features = select_features(selector, pearson_correlation, X, y)
+    selected_features = select_features(selector, X, y)
     @test selected_features == first.(selected_features_all[1:5])
 
     # 3. Test with only threshold
     selector.k = nothing
     selector.threshold = 0.5
     selected_features_threshold =
-        select_features(selector, pearson_correlation, X, y, return_val = true)
+        select_features(selector, X, y, return_val = true)
     @test all(i -> abs(i[2]) >= 0.5, (selected_features_threshold))
 
     # 4. Test with both
     selector.k = 2
     selector.threshold = 0.5
-    selected_features = select_features(selector, pearson_correlation, X, y)
+    selected_features = select_features(selector, X, y)
     @test selected_features == first.(selected_features_threshold[1:2])
 
     # 5. Test warn when setting k = 0
     selector.k = 0
     @test_logs(
         (:warn, r"k cannot be less than 1. Resetting value to 1"),
-        select_features(selector, pearson_correlation, X, y)
+        select_features(selector, X, y)
     )
 
     # @test selected_features == first.(selected_features_threshold[1:1])
@@ -58,7 +58,7 @@ end
 @testset "f-test feature selection" begin
     # 1. Test without k and threshold
     iris = dataset("datasets", "iris")
-    selector = UnivariateFeatureSelector()
+    selector = UnivariateFeatureSelector(method=f_test)
     X = iris[:, Not(:Species)]
     y = Vector{Int64}(recode(
         iris.Species,
@@ -66,7 +66,7 @@ end
         "versicolor" => 2,
         "virginica" => 3,
     ))
-    selected_features_all = select_features(selector, f_test, X, y, return_val = true)
+    selected_features_all = select_features(selector, X, y, return_val = true)
     expected = [
         (:PetalLength, 0.0),
         (:SepalWidth, 8.948397578478762e-14),
@@ -83,36 +83,36 @@ end
         "versicolor" => 1,
         "virginica" => 2,
     ))
-    selected_features_all = select_features(selector, f_test, X, y, return_val = true)
+    selected_features_all = select_features(selector, X, y, return_val = true)
     @test first.(selected_features_all) == first.(expected)
     @test all(last.(selected_features_all) .≈ last.(expected))
 
     # 2. Test with only k
     selector.k = 2
-    selected_features = select_features(selector, f_test, X, y)
+    selected_features = select_features(selector, X, y)
     @test selected_features == first.(selected_features_all[1:2])
 
     # 3. Test with only threshold
     selector.k = nothing
     selector.threshold = 0.5
-    selected_features_threshold = select_features(selector, f_test, X, y, return_val = true)
+    selected_features_threshold = select_features(selector, X, y, return_val = true)
     @test all(i -> abs(i[2]) <= 0.5, (selected_features_threshold))
 
     # 4. Test with both
     selector.k = 2
     selector.threshold = 0.5
-    selected_features = select_features(selector, f_test, X, y)
+    selected_features = select_features(selector, X, y)
     @test selected_features == first.(selected_features_threshold[1:2])
 end
 
 @testset "chi-square feature selection" begin
     # 1. Test without k and threshold
     biopsy = dataset("MASS", "biopsy")[1:150, :] # Only use 150 data for test purpose
-    selector = UnivariateFeatureSelector()
+    selector = UnivariateFeatureSelector(method=chisq_test)
     # One-hot encode and only use 3 features
     X = one_hot_encode(biopsy[:, [:V1, :V2, :V3]]; drop_original = true)
     y = Vector{Int64}(recode(biopsy.Class, "benign" => 1, "malignant" => 2))
-    selected_features_all = select_features(selector, chisq_test, X, y, return_val = true)
+    selected_features_all = select_features(selector, X, y, return_val = true)
     expected = [
         (:V2_1, 1.2657890724845934e-23),
         (:V3_1, 6.420486028446245e-22),
@@ -149,25 +149,25 @@ end
 
     # Test also the p-values are not affected when target encoding changed
     y = Vector{Int64}(recode(biopsy.Class, "benign" => 0, "malignant" => 1))
-    selected_features_all = select_features(selector, chisq_test, X, y, return_val = true)
+    selected_features_all = select_features(selector, X, y, return_val = true)
     @test first.(selected_features_all) == first.(expected)
     @test all(last.(selected_features_all) .≈ last.(expected))
 
     # 2. Test with only k
     selector.k = 2
-    selected_features = select_features(selector, chisq_test, X, y)
+    selected_features = select_features(selector, X, y)
     @test selected_features == first.(selected_features_all[1:2])
 
     # 3. Test with only threshold
     selector.k = nothing
     selector.threshold = 0.5
     selected_features_threshold =
-        select_features(selector, chisq_test, X, y, return_val = true)
+        select_features(selector, X, y, return_val = true)
     @test all(i -> abs(i[2]) <= 0.5, (selected_features_threshold))
 
     # 4. Test with both
     selector.k = 2
     selector.threshold = 0.5
-    selected_features = select_features(selector, chisq_test, X, y)
+    selected_features = select_features(selector, X, y)
     @test selected_features == first.(selected_features_threshold[1:2])
 end
