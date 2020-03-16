@@ -57,7 +57,7 @@ julia> using RDatasets, FeatureSelector, DataFrames
 julia> boston = dataset("MASS", "Boston");
 
 julia> selector = UnivariateFeatureSelector(method=pearson_correlation, k=5)
-UnivariateFeatureSelector(pearson_correlation, 5, nothing)
+UnivariateFeatureSelector(FeatureSelector.pearson_correlation, 5, nothing)
 
 julia> select_features(
            selector,
