@@ -17,10 +17,14 @@ julia> using RDatasets, FeatureSelector, DataFrames
 
 julia> boston = dataset("MASS", "Boston");
 
-julia> selector = UnivariateFeatureSelector(k=5)
-UnivariateFeatureSelector(5, 0.0)
+julia> selector = UnivariateFeatureSelector(method=pearson_correlation, k=5)
+UnivariateFeatureSelector(FeatureSelector.pearson_correlation, 5, nothing)
 
-julia> select_features(selector, pearson_correlation, boston[:, Not(:MedV)], boston.MedV)
+julia> select_features(
+           selector,
+           boston[:, Not(:MedV)],
+           boston.MedV
+       )
 5-element Array{Symbol,1}:
  :LStat
  :Rm

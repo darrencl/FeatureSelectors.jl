@@ -1,11 +1,10 @@
 @testset "correlation feature selection" begin
     # 1. Test without k and threshold
     boston = dataset("MASS", "Boston")
-    selector = UnivariateFeatureSelector(method=pearson_correlation)
+    selector = UnivariateFeatureSelector(method = pearson_correlation)
     X = boston[:, Not(:MedV)]
     y = boston.MedV
-    selected_features_all =
-        select_features(selector, X, y, return_val = true)
+    selected_features_all = select_features(selector, X, y, return_val = true)
     expected = [
         (:LStat, -0.7376627261740151),
         (:Rm, 0.6953599470715394),
@@ -35,8 +34,7 @@
     # 3. Test with only threshold
     selector.k = nothing
     selector.threshold = 0.5
-    selected_features_threshold =
-        select_features(selector, X, y, return_val = true)
+    selected_features_threshold = select_features(selector, X, y, return_val = true)
     @test all(i -> abs(i[2]) >= 0.5, (selected_features_threshold))
 
     # 4. Test with both
@@ -58,7 +56,7 @@ end
 @testset "f-test feature selection" begin
     # 1. Test without k and threshold
     iris = dataset("datasets", "iris")
-    selector = UnivariateFeatureSelector(method=f_test)
+    selector = UnivariateFeatureSelector(method = f_test)
     X = iris[:, Not(:Species)]
     y = Vector{Int64}(recode(
         iris.Species,
@@ -108,7 +106,7 @@ end
 @testset "chi-square feature selection" begin
     # 1. Test without k and threshold
     biopsy = dataset("MASS", "biopsy")[1:150, :] # Only use 150 data for test purpose
-    selector = UnivariateFeatureSelector(method=chisq_test)
+    selector = UnivariateFeatureSelector(method = chisq_test)
     # One-hot encode and only use 3 features
     X = one_hot_encode(biopsy[:, [:V1, :V2, :V3]]; drop_original = true)
     y = Vector{Int64}(recode(biopsy.Class, "benign" => 1, "malignant" => 2))
@@ -161,8 +159,7 @@ end
     # 3. Test with only threshold
     selector.k = nothing
     selector.threshold = 0.5
-    selected_features_threshold =
-        select_features(selector, X, y, return_val = true)
+    selected_features_threshold = select_features(selector, X, y, return_val = true)
     @test all(i -> abs(i[2]) <= 0.5, (selected_features_threshold))
 
     # 4. Test with both

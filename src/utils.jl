@@ -1,7 +1,7 @@
 """
-    function one_hot_encode(df::DataFrame;
-                            cols::Vector{Symbol}=Vector{Symbol}(),
-                            drop_original::Bool=false)
+    one_hot_encode(df::DataFrame;
+                   cols::Vector{Symbol}=Vector{Symbol}(),
+                   drop_original::Bool=false)
 
 Utility function to perform one-hot-encoding in DataFrame. This will add new columns
 with names `<original_col_name>_<value>`.
