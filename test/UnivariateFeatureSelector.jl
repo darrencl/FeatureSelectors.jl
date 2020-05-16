@@ -4,7 +4,8 @@
     selector = UnivariateFeatureSelector(method = pearson_correlation)
     X = boston[:, Not(:MedV)]
     y = boston.MedV
-    selected_features_all = select_features(selector, X, y, return_val = true)
+    selected_features_all = select_features(selector, X, y)
+    feature_scores_all = calculate_feature_importance(selector.method, X, y)
     expected = [
         (:LStat, -0.7376627261740151),
         (:Rm, 0.6953599470715394),
@@ -20,28 +21,30 @@
         (:Dis, 0.24992873408590394),
         (:Chas, 0.1752601771902984),
     ]
-    @test first.(selected_features_all) == first.(expected)
+    @test selected_features_all == first.(expected)
     # Using isapprox because the result with Matrix vs Array is not the
     # exact same due to floating point computation. More detail:
     # https://github.com/JuliaLang/Statistics.jl/issues/24
-    @test all(last.(selected_features_all) .≈ last.(expected))
+    @test all(sort(collect(values(feature_scores_all)), by=abs, rev=true) .≈ last.(expected))
 
     # 2. Test with only k
     selector.k = 5
     selected_features = select_features(selector, X, y)
-    @test selected_features == first.(selected_features_all[1:5])
+    @test selected_features == selected_features_all[1:5]
 
     # 3. Test with only threshold
     selector.k = nothing
     selector.threshold = 0.5
-    selected_features_threshold = select_features(selector, X, y, return_val = true)
-    @test all(i -> abs(i[2]) >= 0.5, (selected_features_threshold))
+    selected_features_threshold = select_features(selector, X, y)
+    feature_scores = calculate_feature_importance(selector.method, X, y)
+    selected_features_score = filter(e->e[1] in selected_features_threshold, feature_scores)
+    @test all(i -> abs(i) >= 0.5, values(selected_features_score))
 
     # 4. Test with both
     selector.k = 2
     selector.threshold = 0.5
     selected_features = select_features(selector, X, y)
-    @test selected_features == first.(selected_features_threshold[1:2])
+    @test selected_features == selected_features_threshold[1:2]
 
     # 5. Test warn when setting k = 0
     selector.k = 0
@@ -50,7 +53,6 @@
         select_features(selector, X, y)
     )
 
-    # @test selected_features == first.(selected_features_threshold[1:1])
 end
 
 @testset "f-test feature selection" begin
@@ -64,15 +66,16 @@ end
         "versicolor" => 2,
         "virginica" => 3,
     ))
-    selected_features_all = select_features(selector, X, y, return_val = true)
+    selected_features_all = select_features(selector, X, y)
+    feature_scores_all = calculate_feature_importance(selector.method, X, y)
     expected = [
         (:PetalLength, 0.0),
         (:SepalWidth, 8.948397578478762e-14),
         (:PetalWidth, 0.37975655685608567),
         (:SepalLength, 0.8960092318703157),
     ]
-    @test first.(selected_features_all) == first.(expected)
-    @test all(last.(selected_features_all) .≈ last.(expected))
+    @test selected_features_all == first.(expected)
+    @test all(sort(collect(values(feature_scores_all)), by=abs) .≈ last.(expected))
 
     # Test also the p-values are not affected when target encoding swapped
     y = Vector{Int64}(recode(
@@ -81,26 +84,29 @@ end
         "versicolor" => 1,
         "virginica" => 2,
     ))
-    selected_features_all = select_features(selector, X, y, return_val = true)
-    @test first.(selected_features_all) == first.(expected)
-    @test all(last.(selected_features_all) .≈ last.(expected))
+    selected_features_all = select_features(selector, X, y)
+    feature_scores_all = calculate_feature_importance(selector.method, X, y)
+    @test selected_features_all == first.(expected)
+    @test all(sort(collect(values(feature_scores_all)), by=abs) .≈ last.(expected))
 
     # 2. Test with only k
     selector.k = 2
     selected_features = select_features(selector, X, y)
-    @test selected_features == first.(selected_features_all[1:2])
+    @test selected_features == selected_features_all[1:2]
 
     # 3. Test with only threshold
     selector.k = nothing
     selector.threshold = 0.5
-    selected_features_threshold = select_features(selector, X, y, return_val = true)
-    @test all(i -> abs(i[2]) <= 0.5, (selected_features_threshold))
+    selected_features_threshold = select_features(selector, X, y)
+    feature_scores = calculate_feature_importance(selector.method, X, y)
+    selected_features_score = filter(e->e[1] in selected_features, feature_scores)
+    @test all(i -> abs(i) <= 0.5, values(selected_features_score))
 
     # 4. Test with both
     selector.k = 2
     selector.threshold = 0.5
     selected_features = select_features(selector, X, y)
-    @test selected_features == first.(selected_features_threshold[1:2])
+    @test selected_features == selected_features_threshold[1:2]
 end
 
 @testset "chi-square feature selection" begin
@@ -110,7 +116,8 @@ end
     # One-hot encode and only use 3 features
     X = one_hot_encode(biopsy[:, [:V1, :V2, :V3]]; drop_original = true)
     y = Vector{Int64}(recode(biopsy.Class, "benign" => 1, "malignant" => 2))
-    selected_features_all = select_features(selector, X, y, return_val = true)
+    selected_features_all = select_features(selector, X, y)
+    feature_scores_all = calculate_feature_importance(selector.method, X, y)
     expected = [
         (:V2_1, 1.2657890724845934e-23),
         (:V3_1, 6.420486028446245e-22),
@@ -142,29 +149,32 @@ end
         (:V2_2, 0.6279678908602435),
         (:V1_6, 0.695728316971443),
     ]
-    @test first.(selected_features_all) == first.(expected)
-    @test all(last.(selected_features_all) .≈ last.(expected))
+    @test selected_features_all == first.(expected)
+    @test all(sort(collect(values(feature_scores_all)), by=abs) .≈ last.(expected))
 
     # Test also the p-values are not affected when target encoding changed
     y = Vector{Int64}(recode(biopsy.Class, "benign" => 0, "malignant" => 1))
-    selected_features_all = select_features(selector, X, y, return_val = true)
-    @test first.(selected_features_all) == first.(expected)
-    @test all(last.(selected_features_all) .≈ last.(expected))
+    selected_features_all = select_features(selector, X, y)
+    feature_scores_all = calculate_feature_importance(selector.method, X, y)
+    @test selected_features_all == first.(expected)
+    @test all(sort(collect(values(feature_scores_all)), by=abs) .≈ last.(expected))
 
     # 2. Test with only k
     selector.k = 2
     selected_features = select_features(selector, X, y)
-    @test selected_features == first.(selected_features_all[1:2])
+    @test selected_features == selected_features_all[1:2]
 
     # 3. Test with only threshold
     selector.k = nothing
     selector.threshold = 0.5
-    selected_features_threshold = select_features(selector, X, y, return_val = true)
-    @test all(i -> abs(i[2]) <= 0.5, (selected_features_threshold))
+    selected_features_threshold = select_features(selector, X, y)
+    feature_scores = calculate_feature_importance(selector.method, X, y)
+    selected_features_score = filter(e->e[1] in selected_features, feature_scores)
+    @test all(i -> abs(i) <= 0.5, values(selected_features_score))
 
     # 4. Test with both
     selector.k = 2
     selector.threshold = 0.5
     selected_features = select_features(selector, X, y)
-    @test selected_features == first.(selected_features_threshold[1:2])
+    @test selected_features == selected_features_threshold[1:2]
 end
