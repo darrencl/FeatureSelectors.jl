@@ -16,7 +16,7 @@ Following options can be passed to modify behavior.
 # Example
 
 ```jldoctest
-julia> using RDatasets, FeatureSelector
+julia> using RDatasets, FeatureSelectors
 
 julia> titanic = dataset("datasets", "Titanic");
 

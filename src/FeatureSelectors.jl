@@ -1,9 +1,9 @@
-module FeatureSelector
+module FeatureSelectors
 
 @doc let path = joinpath(dirname(@__DIR__), "README.md")
     include_dependency(path)
     replace(read(path, String), "```julia" => "```jldoctest")
-end FeatureSelector
+end FeatureSelectors
 
 using Statistics
 using StatsBase
@@ -13,7 +13,6 @@ using RDatasets
 
 include("utils.jl")
 include("UnivariateFeatureSelector.jl")
-# include("PValueBasedFeatureSelector.jl")
 
 #! format: off
 export

@@ -1,4 +1,4 @@
-name = "FeatureSelector"
+name = "FeatureSelectors"
 uuid = "e0e7d8aa-9f8d-4d2b-94aa-a22ac5d6b31b"
 authors = ["Darren Lukas <darrenc2995@gmail.com>"]
 version = "0.1.0"
