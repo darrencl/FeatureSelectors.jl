@@ -26,7 +26,8 @@ export
     f_test,
     chisq_test,
     # Utils
-    one_hot_encode
+    one_hot_encode,
+    calculate_feature_importance
 
 #! format: on
 end # module

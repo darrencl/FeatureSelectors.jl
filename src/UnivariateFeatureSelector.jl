@@ -37,14 +37,11 @@ end
     select_features(selector,
                     X::DataFrame,
                     y::Vector;
-                    verbose::Bool=false,
-                    return_val::Bool=false)
+                    verbose::Bool=false)
 
 Select features based on the importance, which is defined by `selector.method`
 to target `y`. if `verbose` is true, logs will be printed - this defaults to
-false. If `return_val` is false, this function will return only the feature
-feature names, otherwise, tuple of selected feature names and the
-correlation value are returned.
+false. This function will return only the feature names of selected features.
 
 If you have feature `X_data` as matrix and feature names `X_features` as a
 Vector, you can replace `X` with `X_data` and `X_features` (in this order).
@@ -79,7 +76,6 @@ function select_features(
     X_features::Vector,
     y::Vector;
     verbose::Bool = false,
-    return_val::Bool = false,
 )
     score_arr = selector.method(X_data, y)
     # Correlation should be sorted descending
@@ -110,11 +106,7 @@ function select_features(
         verbose && @info "Filtering by threshold" selector.threshold
         sorted_tup = filter(v -> filter_operator(abs(v[2]), selector.threshold), sorted_tup)
     end
-    if return_val
-        sorted_tup
-    else
-        first.(sorted_tup)
-    end
+    first.(sorted_tup)
 end
 
 select_features(
@@ -122,14 +114,12 @@ select_features(
     X::DataFrame,
     y::Vector;
     verbose::Bool = false,
-    return_val::Bool = false,
 ) = select_features(
     selector,
     convert(Matrix, X),
     names(X),
     y;
     verbose = verbose,
-    return_val = return_val,
 )
 
 """
