@@ -1,8 +1,8 @@
-using FeatureSelector
+using FeatureSelectors
 using Test
 using RDatasets
 
-@testset "FeatureSelector.jl" begin
+@testset "FeatureSelectors.jl" begin
     @testset "Univariate feature selector" begin
         include("UnivariateFeatureSelector.jl")
     end

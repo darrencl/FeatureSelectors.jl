@@ -1,4 +1,4 @@
-# FeatureSelector.jl
+# FeatureSelectors.jl
 
 Simple tool to select feature based on the statistical relationship between features to target variable. The currently implemented feature is based on:
 
@@ -8,12 +8,12 @@ Simple tool to select feature based on the statistical relationship between feat
 ## Quick start
 
 ```jldoctest
-julia> using RDatasets, FeatureSelector, DataFrames
+julia> using RDatasets, FeatureSelectors, DataFrames
 
 julia> boston = dataset("MASS", "Boston");
 
 julia> selector = UnivariateFeatureSelector(method=pearson_correlation, k=5)
-UnivariateFeatureSelector(FeatureSelector.pearson_correlation, 5, nothing)
+UnivariateFeatureSelector(FeatureSelectors.pearson_correlation, 5, nothing)
 
 julia> select_features(
            selector,

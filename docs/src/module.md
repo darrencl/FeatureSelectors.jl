@@ -12,7 +12,7 @@ helps selecting the important features based on the correlation and p-value.
 
 ### Univariate feature selector
 ```@autodocs
-Modules = [FeatureSelector]
+Modules = [FeatureSelectors]
 Pages   = ["UnivariateFeatureSelector.jl"]
 Filter = t -> typeof(t) === DataType
 ```
@@ -31,6 +31,6 @@ select_features
 
 ## Other util functions
 ```@autodocs
-Modules = [FeatureSelector]
+Modules = [FeatureSelectors]
 Pages   = ["utils.jl"]
 ```
