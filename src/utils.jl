@@ -21,23 +21,25 @@ julia> using RDatasets, FeatureSelectors
 julia> titanic = dataset("datasets", "Titanic");
 
 julia> first(one_hot_encode(titanic[:, [:Class, :Sex, :Age]]), 3)
-3×11 DataFrames.DataFrame. Omitted printing of 5 columns
-│ Row │ Class  │ Sex    │ Age    │ Class_1st │ Class_2nd │ Class_3rd │
-│     │ String │ String │ String │ Bool      │ Bool      │ Bool      │
-├─────┼────────┼────────┼────────┼───────────┼───────────┼───────────┤
-│ 1   │ 1st    │ Male   │ Child  │ 1         │ 0         │ 0         │
-│ 2   │ 2nd    │ Male   │ Child  │ 0         │ 1         │ 0         │
-│ 3   │ 3rd    │ Male   │ Child  │ 0         │ 0         │ 1         │
+3×11 DataFrame
+ Row │ Class    Sex      Age      Class_1st  Class_2nd  Class_3rd  Class_Crew  ⋯
+     │ String7  String7  String7  Bool       Bool       Bool       Bool        ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ 1st      Male     Child         true      false      false       false  ⋯
+   2 │ 2nd      Male     Child        false       true      false       false
+   3 │ 3rd      Male     Child        false      false       true       false
+                                                               4 columns omitted
 
 
 julia> first(one_hot_encode(titanic[:, [:Class, :Sex, :Age]], cols=[:Class], drop_original=true), 3)
-3×6 DataFrames.DataFrame
-│ Row │ Sex    │ Age    │ Class_1st │ Class_2nd │ Class_3rd │ Class_Crew │
-│     │ String │ String │ Bool      │ Bool      │ Bool      │ Bool       │
-├─────┼────────┼────────┼───────────┼───────────┼───────────┼────────────┤
-│ 1   │ Male   │ Child  │ 1         │ 0         │ 0         │ 0          │
-│ 2   │ Male   │ Child  │ 0         │ 1         │ 0         │ 0          │
-│ 3   │ Male   │ Child  │ 0         │ 0         │ 1         │ 0          │
+3×6 DataFrame
+ Row │ Sex      Age      Class_1st  Class_2nd  Class_3rd  Class_Crew
+     │ String7  String7  Bool       Bool       Bool       Bool
+─────┼───────────────────────────────────────────────────────────────
+   1 │ Male     Child         true      false      false       false
+   2 │ Male     Child        false       true      false       false
+   3 │ Male     Child        false      false       true       false
+
 ```
 """
 function one_hot_encode(
@@ -48,7 +50,7 @@ function one_hot_encode(
     result_df = df
     for col_name in names(df)
         # Ignore if column not in cols
-        if !(col_name in cols) && !isempty(cols)
+        if !(Symbol(col_name) in cols) && !isempty(cols)
             continue
         end
         tmp_df = DataFrame(Array(transpose(indicatormat(df[:, col_name]))), :auto)

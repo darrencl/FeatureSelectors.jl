@@ -20,10 +20,10 @@ julia> select_features(
            boston[:, Not(:MedV)],
            boston.MedV
        )
-5-element Array{Symbol,1}:
- :LStat
- :Rm
- :PTRatio
- :Indus
- :Tax
+5-element Vector{String}:
+ "LStat"
+ "Rm"
+ "PTRatio"
+ "Indus"
+ "Tax"
 ```
