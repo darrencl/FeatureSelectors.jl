@@ -46,12 +46,12 @@ function one_hot_encode(
     drop_original::Bool = false,
 )
     result_df = df
-    for (col_name, col) in eachcol(df, true)
+    for col_name in names(df)
         # Ignore if column not in cols
         if !(col_name in cols) && !isempty(cols)
             continue
         end
-        tmp_df = DataFrame(Array(transpose(indicatormat(df[:, col_name]))))
+        tmp_df = DataFrame(Array(transpose(indicatormat(df[:, col_name]))), :auto)
         rename!(tmp_df, [Symbol("$(col_name)_$x") for x in sort(unique(df[:, col_name]))])
         result_df = drop_original ? hcat(result_df, tmp_df)[:, Not(col_name)] :
             hcat(result_df, tmp_df)
@@ -84,7 +84,7 @@ calculate_feature_importance(
     y::Vector
 ) = calculate_feature_importance(
     method,
-    convert(Matrix, X),
+    Matrix(X),
     names(X),
     y,
 )
