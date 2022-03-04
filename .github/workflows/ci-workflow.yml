@@ -29,6 +29,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   doc:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        julia-version: [1.7]
     steps:
       - uses: actions/checkout@v1.0.0
       - name: "Set up Julia"
