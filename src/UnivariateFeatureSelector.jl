@@ -116,7 +116,7 @@ select_features(
     verbose::Bool = false,
 ) = select_features(
     selector,
-    convert(Matrix, X),
+    Matrix(X),
     names(X),
     y;
     verbose = verbose,
