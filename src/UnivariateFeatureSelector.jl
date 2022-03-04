@@ -171,7 +171,7 @@ function chisq_test(X_data::Matrix, y::Vector)
         # sum count and recode missing to 0
         _y = replace(
             sort(combine(r -> sum(r.Count), groupby(Xy_df, [col_name, y_name]))).x1,
-            missing => 0
+            missing => 0,
         )
         _y = reshape(
             _y,
