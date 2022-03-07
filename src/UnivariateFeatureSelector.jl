@@ -61,12 +61,12 @@ julia> select_features(
            boston[:, Not(:MedV)],
            boston.MedV
        )
-5-element Array{Symbol,1}:
- :LStat
- :Rm
- :PTRatio
- :Indus
- :Tax
+5-element Vector{String}:
+ "LStat"
+ "Rm"
+ "PTRatio"
+ "Indus"
+ "Tax"
 
 ```
 """
@@ -116,7 +116,7 @@ select_features(
     verbose::Bool = false,
 ) = select_features(
     selector,
-    convert(Matrix, X),
+    Matrix(X),
     names(X),
     y;
     verbose = verbose,
@@ -145,12 +145,12 @@ Calculate p-value using chi-square test.
 """
 function chisq_test(X_data::Matrix, y::Vector)
     # DataFrame for easy aggregation
-    data_df = DataFrame(hcat(X_data, y))
+    data_df = DataFrame(hcat(X_data, y), :auto)
     # Rename cols to prevent name clash with count aggregation below
     rename!(data_df, [Symbol("input$i") for i = 1:size(data_df)[2]])
     y_name = names(data_df[!, [end]])[1]
     pvals = Vector{Float64}()
-    for (col_name, X_col) in eachcol(data_df[:, 1:end-1], true)
+    for col_name in names(data_df[:, 1:end-1])
         # Hacky method to generate frequency count and put 0 for missing
         # combination. `by` function is not able to achieve this. See:
         # https://github.com/JuliaData/DataFrames.jl/issues/2136
@@ -160,18 +160,19 @@ function chisq_test(X_data::Matrix, y::Vector)
         rename!(Xy_df, :x1 => :Count)
         # This nested join will append missing in Count to missing combination
         # of value in col_name and y_name
-        Xy_df = join(
-            join(
-                DataFrame(; col_name => unique(Xy_df[:, col_name])),
-                DataFrame(; y_name => unique(Xy_df[:, y_name])),
-                kind = :cross,
+        Xy_df = outerjoin(
+            crossjoin(
+                DataFrame(; Symbol(col_name) => unique(Xy_df[:, col_name])),
+                DataFrame(; Symbol(y_name) => unique(Xy_df[:, y_name])),
             ),
             Xy_df,
             on = [col_name, y_name],
-            kind = :outer,
         )
         # sum count and recode missing to 0
-        _y = recode(sort(by(Xy_df, [col_name, y_name], r -> sum(r.Count))).x1, missing => 0)
+        _y = replace(
+            sort(combine(r -> sum(r.Count), groupby(Xy_df, [col_name, y_name]))).x1,
+            missing => 0,
+        )
         _y = reshape(
             _y,
             (length(unique(Xy_df[:, col_name])), length(unique(Xy_df[:, y_name]))),

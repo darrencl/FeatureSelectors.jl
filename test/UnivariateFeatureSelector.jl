@@ -21,7 +21,7 @@
         (:Dis, 0.24992873408590394),
         (:Chas, 0.1752601771902984),
     ]
-    @test selected_features_all == first.(expected)
+    @test Symbol.(selected_features_all) == first.(expected)
     # Using isapprox because the result with Matrix vs Array is not the
     # exact same due to floating point computation. More detail:
     # https://github.com/JuliaLang/Statistics.jl/issues/24
@@ -60,7 +60,7 @@ end
     iris = dataset("datasets", "iris")
     selector = UnivariateFeatureSelector(method = f_test)
     X = iris[:, Not(:Species)]
-    y = Vector{Int64}(recode(
+    y = Vector{Int64}(replace(
         iris.Species,
         "setosa" => 1,
         "versicolor" => 2,
@@ -74,11 +74,11 @@ end
         (:PetalWidth, 0.37975655685608567),
         (:SepalLength, 0.8960092318703157),
     ]
-    @test selected_features_all == first.(expected)
+    @test Symbol.(selected_features_all) == first.(expected)
     @test all(sort(collect(values(feature_scores_all)), by=abs) .≈ last.(expected))
 
     # Test also the p-values are not affected when target encoding swapped
-    y = Vector{Int64}(recode(
+    y = Vector{Int64}(replace(
         iris.Species,
         "setosa" => 3,
         "versicolor" => 1,
@@ -86,7 +86,7 @@ end
     ))
     selected_features_all = select_features(selector, X, y)
     feature_scores_all = calculate_feature_importance(selector.method, X, y)
-    @test selected_features_all == first.(expected)
+    @test Symbol.(selected_features_all) == first.(expected)
     @test all(sort(collect(values(feature_scores_all)), by=abs) .≈ last.(expected))
 
     # 2. Test with only k
@@ -115,7 +115,7 @@ end
     selector = UnivariateFeatureSelector(method = chisq_test)
     # One-hot encode and only use 3 features
     X = one_hot_encode(biopsy[:, [:V1, :V2, :V3]]; drop_original = true)
-    y = Vector{Int64}(recode(biopsy.Class, "benign" => 1, "malignant" => 2))
+    y = Vector{Int64}(replace(biopsy.Class, "benign" => 1, "malignant" => 2))
     selected_features_all = select_features(selector, X, y)
     feature_scores_all = calculate_feature_importance(selector.method, X, y)
     expected = [
@@ -149,14 +149,14 @@ end
         (:V2_2, 0.6279678908602435),
         (:V1_6, 0.695728316971443),
     ]
-    @test selected_features_all == first.(expected)
+    @test Symbol.(selected_features_all) == first.(expected)
     @test all(sort(collect(values(feature_scores_all)), by=abs) .≈ last.(expected))
 
     # Test also the p-values are not affected when target encoding changed
-    y = Vector{Int64}(recode(biopsy.Class, "benign" => 0, "malignant" => 1))
+    y = Vector{Int64}(replace(biopsy.Class, "benign" => 0, "malignant" => 1))
     selected_features_all = select_features(selector, X, y)
     feature_scores_all = calculate_feature_importance(selector.method, X, y)
-    @test selected_features_all == first.(expected)
+    @test Symbol.(selected_features_all) == first.(expected)
     @test all(sort(collect(values(feature_scores_all)), by=abs) .≈ last.(expected))
 
     # 2. Test with only k

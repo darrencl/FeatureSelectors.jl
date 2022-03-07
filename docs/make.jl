@@ -15,4 +15,5 @@ deploydocs(
     repo = "github.com/darrencl/FeatureSelectors.jl.git",
     target = "build",
     push_preview = true,
+    devbranch = "master",
 )
